@@ -21,6 +21,7 @@ this file before ideating and appends to it after each run.
 | seed | Fix a slow connection | wifi | published | initial content |
 | seed | Master copy & paste shortcuts | shortcuts | published | initial content |
 | seed | Reopen a closed browser tab | shortcuts | published | initial content |
+| 2026-05-18 | Set up a guest Wi-Fi network | wifi | draft | [PR #1](https://github.com/techtimefly/techtips/pull/1) |
 
 ## Articles (Guides)
 
@@ -36,3 +37,7 @@ future runs can develop them. Add rows as `| <date> | <concept> | <category> |`.
 
 | Date logged | Idea | Category |
 |-------------|------|----------|
+| 2026-05-18 | Lock your computer instantly (Win+L / Ctrl+Cmd+Q) | shortcuts |
+| 2026-05-18 | Find text on a page with Ctrl/Cmd+F | shortcuts |
+| 2026-05-18 | Check if your accounts were in a data breach | security |
+| 2026-05-18 | Use your phone as a hotspot when Wi-Fi is down | wifi |

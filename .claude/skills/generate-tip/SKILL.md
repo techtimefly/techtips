@@ -84,20 +84,27 @@ Re-check the draft against the rubric, the voice, and the frontmatter rules abov
 (the `content-markdown` build plugin rejects a missing field, an unknown category,
 or zero steps). Revise once. Confirm it is genuinely not a duplicate.
 
-### 7. Log it and open the PR
-First append to `scripts/tip-ideas-log.md`: a row in the **Tips** table
-(today's date, title, category, status `draft`, PR link) and the runner-up ideas
-under **Runner-up ideas (parked)**. Then:
+### 7. Open the PR, then log it on `main`
+
+The tip ships on its own branch (tip file only). The ideas log is updated
+**on `main`** — so the next run's dedup memory is always current, even for
+tips that are still pending review or get rejected.
 
 ```bash
 git checkout main && git pull --ff-only
-git checkout -b tip/<slug>          # if the branch exists, suffix with the date
-# write content/tips/<slug>.md  and  update scripts/tip-ideas-log.md
-git add content/tips/<slug>.md scripts/tip-ideas-log.md
+git checkout -b tip/<slug>                 # if the branch exists, suffix with the date
+# write content/tips/<slug>.md  — the tip file ONLY
+git add content/tips/<slug>.md
 git commit -m "Draft tip: <title>"
 git push -u origin tip/<slug>
 gh pr create --title "Draft tip: <title>" --body "<body, see template>"
+
 git checkout main
+# append to scripts/tip-ideas-log.md: a Tips-table row (date, title, category,
+# status `draft`, PR link) plus the runner-up ideas under "Runner-up ideas"
+git add scripts/tip-ideas-log.md
+git commit -m "Log tip idea: <title>"
+git push origin main
 ```
 
 If `gh` is unavailable or not authenticated, push the branch and output the
