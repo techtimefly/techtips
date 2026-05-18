@@ -1,4 +1,4 @@
-import { Suspense, lazy, useState } from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 import { categories, tips } from '../data/tips';
 
@@ -14,6 +14,10 @@ const STATS = [
 export function Hero() {
   const reduced = useReducedMotion();
   const [heroLoaded, setHeroLoaded] = useState(false);
+  // The WebGL canvas is client-only — never render it during static
+  // pre-rendering (no DOM/WebGL in Node).
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   return (
     <section
@@ -35,7 +39,7 @@ export function Hero() {
       />
 
       {/* WebGL scene — skipped entirely when the user prefers reduced motion */}
-      {!reduced && (
+      {mounted && !reduced && (
         <div className="absolute inset-0 z-20" aria-hidden="true">
           <Suspense fallback={null}>
             <HeroScene />

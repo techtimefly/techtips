@@ -3,6 +3,7 @@ import type { Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import matter from 'gray-matter';
+import { marked } from 'marked';
 import { readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -29,10 +30,12 @@ function listCategoryIds(root: string): string[] {
 }
 
 /**
- * Compiles `content/tips/*.md` and `content/categories/*.md` into modules at
- * build time. YAML frontmatter becomes the fields; a tip's body list becomes
- * its steps. Tip categories are validated against the category files, so a
- * malformed file — or a typo'd category — fails the build with a clear message.
+ * Compiles markdown content into modules at build time:
+ *   - content/categories/*.md → category objects
+ *   - content/tips/*.md       → tip objects (body list → steps)
+ *   - content/articles/*.md   → article objects (body → rendered HTML)
+ * A malformed file — missing field, bad color, unknown category, empty
+ * body — fails the build with a clear message.
  */
 function contentMarkdown(): Plugin {
   let root = process.cwd();
@@ -45,7 +48,8 @@ function contentMarkdown(): Plugin {
     transform(code, id) {
       const isTip = /\/content\/tips\/[^/]+\.md$/.test(id);
       const isCategory = /\/content\/categories\/[^/]+\.md$/.test(id);
-      if (!isTip && !isCategory) return null;
+      const isArticle = /\/content\/articles\/[^/]+\.md$/.test(id);
+      if (!isTip && !isCategory && !isArticle) return null;
 
       const { data, content } = matter(code);
 
@@ -71,6 +75,35 @@ function contentMarkdown(): Plugin {
           order: typeof data.order === 'number' ? data.order : 999,
         };
         return { code: `export default ${JSON.stringify(category)};`, map: null };
+      }
+
+      if (isArticle) {
+        for (const field of ['title', 'summary']) {
+          if (data[field] == null || data[field] === '') {
+            this.error(`missing frontmatter field "${field}"`);
+          }
+        }
+        const body = content.trim();
+        if (!body) {
+          this.error('article body is empty — add the article content below the frontmatter');
+        }
+        const words = body.split(/\s+/).filter(Boolean).length;
+        const article = {
+          slug: slugOf(id),
+          title: data.title,
+          summary: data.summary,
+          cover: data.cover ?? null,
+          date:
+            data.date instanceof Date
+              ? data.date.toISOString().slice(0, 10)
+              : data.date
+                ? String(data.date)
+                : null,
+          order: typeof data.order === 'number' ? data.order : 999,
+          readingTime: Math.max(1, Math.round(words / 200)),
+          html: marked.parse(body) as string,
+        };
+        return { code: `export default ${JSON.stringify(article)};`, map: null };
       }
 
       // Tip
