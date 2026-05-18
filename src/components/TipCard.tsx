@@ -32,7 +32,7 @@ export function TipCard({ tip, index, onOpen }: Props) {
         {/* Higgsfield category artwork */}
         <div className="relative">
           <Artwork
-            src={cat.art}
+            src={tip.image ?? cat.art}
             color={cat.color}
             alt=""
             className="aspect-[16/10] w-full"

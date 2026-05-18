@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface ArtworkProps {
   /** Image path (Higgsfield-generated artwork) */
@@ -7,16 +7,32 @@ interface ArtworkProps {
   color: string;
   className?: string;
   alt?: string;
+  /** Load immediately instead of lazily — use for above-the-fold images */
+  eager?: boolean;
 }
 
 /**
- * Renders category artwork over a color-tinted gradient. The gradient always
- * shows, so the layout looks intentional even before assets are generated or
- * if an image fails to load.
+ * Renders artwork over a color-tinted gradient. The gradient always shows, so
+ * the layout looks intentional before the image loads or if it fails.
  */
-export function Artwork({ src, color, className = '', alt = '' }: ArtworkProps) {
+export function Artwork({
+  src,
+  color,
+  className = '',
+  alt = '',
+  eager = false,
+}: ArtworkProps) {
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
+
+  // A cached image often finishes loading before React wires up `onLoad`,
+  // which would otherwise leave it stuck at opacity 0. Check `complete` on
+  // mount (and whenever the src changes) so cached images show instantly.
+  useEffect(() => {
+    const img = imgRef.current;
+    setLoaded(Boolean(img?.complete && img.naturalWidth > 0));
+  }, [src]);
 
   return (
     <div
@@ -29,13 +45,14 @@ export function Artwork({ src, color, className = '', alt = '' }: ArtworkProps) 
     >
       {!failed && (
         <img
+          ref={imgRef}
           src={src}
           alt={alt}
-          loading="lazy"
+          loading={eager ? 'eager' : 'lazy'}
           decoding="async"
           onLoad={() => setLoaded(true)}
           onError={() => setFailed(true)}
-          className={`h-full w-full object-cover transition-opacity duration-700 ${
+          className={`h-full w-full object-cover transition-opacity duration-300 ${
             loaded ? 'opacity-100' : 'opacity-0'
           }`}
         />

@@ -32,6 +32,8 @@ export interface Tip {
   summary: string;
   /** Roughly how long the tip takes to apply */
   effort: string;
+  /** Optional image; when set, overrides the category art on the card + modal */
+  image: string | null;
   /** Full step-by-step detail shown in the modal */
   steps: string[];
 }
@@ -80,5 +82,6 @@ export const tips: Tip[] = Object.values(tipModules)
     title: raw.title,
     summary: raw.summary,
     effort: raw.effort,
+    image: raw.image,
     steps: raw.steps,
   }));

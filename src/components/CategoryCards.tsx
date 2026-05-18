@@ -24,6 +24,7 @@ export function CategoryCards({ onSelect }: Props) {
               color={c.color}
               alt={`${c.label} illustration`}
               className="aspect-[4/3] w-full"
+              eager
             />
             <div className="flex flex-1 flex-col p-5">
               <div className="flex items-center gap-2">

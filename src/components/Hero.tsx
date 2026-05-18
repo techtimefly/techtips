@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useState } from 'react';
+import { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 import { categories, tips } from '../data/tips';
 
@@ -19,6 +19,14 @@ export function Hero() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
+  // A cached hero image can finish before React wires up `onLoad` — check
+  // `complete` on mount so it doesn't stay stuck at opacity 0.
+  const heroImg = useRef<HTMLImageElement>(null);
+  useEffect(() => {
+    const img = heroImg.current;
+    if (img?.complete && img.naturalWidth > 0) setHeroLoaded(true);
+  }, []);
+
   return (
     <section
       id="top"
@@ -29,11 +37,12 @@ export function Hero() {
 
       {/* Higgsfield hero artwork (gracefully absent until generated) */}
       <img
+        ref={heroImg}
         src="/assets/hero/hero.webp"
         alt=""
         aria-hidden="true"
         onLoad={() => setHeroLoaded(true)}
-        className={`absolute inset-0 z-10 h-full w-full object-cover transition-opacity duration-1000 ${
+        className={`absolute inset-0 z-10 h-full w-full object-cover transition-opacity duration-700 ${
           heroLoaded ? 'opacity-45' : 'opacity-0'
         }`}
       />

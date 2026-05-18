@@ -57,7 +57,7 @@ export function TipModal({ tip, onClose }: Props) {
           >
             <div className="relative shrink-0">
               <Artwork
-                src={cat.art}
+                src={tip.image ?? cat.art}
                 color={cat.color}
                 alt=""
                 className="aspect-[16/7] w-full"

@@ -134,6 +134,8 @@ function contentMarkdown(): Plugin {
         category: data.category,
         summary: data.summary,
         effort: String(data.effort),
+        // Optional — overrides the category art on this tip's card + modal.
+        image: data.image ? String(data.image) : null,
         order: typeof data.order === 'number' ? data.order : 999,
         steps,
       };

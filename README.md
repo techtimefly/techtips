@@ -72,6 +72,11 @@ Frontmatter holds the card fields; each body bullet becomes one step in the
 detail modal (one step per line). `category` must match a category file's name,
 and `order` sorts the grid. The filename (minus any `NN-` prefix) is the id.
 
+An optional `image:` field (a path under `public/`, e.g. `/assets/tips/foo.webp`)
+overrides the category illustration on that tip's card and modal — useful for a
+standout tip. Omit it and the tip uses its category's shared art; either way the
+category badge stays on the card.
+
 ### Categories — `content/categories/*.md`
 
 ```md
