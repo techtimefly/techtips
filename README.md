@@ -30,19 +30,70 @@ npm run preview  # serve the production build
 ## Structure
 
 ```
+content/
+  categories/           # category definitions — one markdown file each
+  tips/                 # tip content — one markdown file per tip
 src/
-  data/tips.ts          # all tip content + categories (edit here to add tips)
+  data/tips.ts          # the build-time markdown loader (categories + tips)
   components/           # Nav, Hero, HeroScene, CategoryCards, CategoryFilter,
                         # TipGrid, TipCard, TipModal, Artwork, Footer, Logo
   hooks/                # useTilt, useReducedMotion
-public/assets/          # Higgsfield-generated artwork (hero + 4 category icons)
+public/assets/          # Higgsfield-generated artwork (hero + category icons)
 scripts/ASSETS.md       # prompts + pipeline for regenerating artwork
 ```
 
 ## Editing content
 
-All tips live in `src/data/tips.ts` — add an entry to the `tips` array (id,
-category, title, summary, effort, steps). No other changes needed.
+All content is markdown under `content/` — **open that folder as an Obsidian
+vault** (or edit with any text editor). There are two kinds of file.
+
+### Tips — `content/tips/*.md`
+
+```md
+---
+title: Free up storage fast
+category: phone
+summary: Reclaim gigabytes without deleting a single photo.
+effort: 5 min
+order: 1
+---
+
+- Open Settings → Storage to see what is taking up space.
+- Clear app caches to reclaim hundreds of MB.
+```
+
+Frontmatter holds the card fields; each body bullet becomes one step in the
+detail modal (one step per line). `category` must match a category file's name,
+and `order` sorts the grid. The filename (minus any `NN-` prefix) is the id.
+
+### Categories — `content/categories/*.md`
+
+```md
+---
+label: Phone & Storage
+short: Phone
+color: "#34d399"
+blurb: Free up space, save battery, and find things faster.
+art: /assets/tips/phone.webp
+order: 1
+---
+```
+
+The filename (`phone.md`) is the category id that tips reference. **Quote hex
+colors** — `color: "#34d399"` — an unquoted `#` is a YAML comment and the build
+will reject it. A brand-new category also needs an artwork image at the `art`
+path (see `scripts/ASSETS.md` to generate one).
+
+### Both
+
+- **Add** = add a file; **remove** = delete the file.
+- A build-time Vite plugin (`content-markdown` in `vite.config.ts`) parses and
+  validates everything — a missing field, bad color, unknown category, or empty
+  step list **fails the build** with a message naming the file. Keep
+  `npm run dev` running while editing for instant feedback.
+- With the *Obsidian Git* community plugin, edits can auto-commit and push, and
+  your deploy host (Vercel/Netlify) rebuilds automatically — edit content, and
+  it's live in under a minute.
 
 ## Artwork
 
