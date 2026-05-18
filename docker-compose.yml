@@ -1,0 +1,24 @@
+# TechTips — dev-server container.
+#
+# Editing flow stays exactly the same:
+#   Obsidian (Mac) → Samba share on the host → ./content → bind-mounted here.
+# Samba runs on the host, not in this container.
+#
+#   docker compose up -d --build     start (build on first run / after code changes)
+#   docker compose logs -f           watch logs
+#   docker compose down              stop
+services:
+  techtips:
+    build: .
+    container_name: techtips
+    ports:
+      - "5173:5173"
+    volumes:
+      # The host's content/ folder — what Samba shares and Obsidian edits.
+      # The bind mount lets the dev server hot-reload on every save.
+      - ./content:/app/content
+    environment:
+      # Tells vite.config.ts to watch via polling, so file changes on the
+      # bind-mounted content/ folder are detected reliably.
+      DOCKER: "true"
+    restart: unless-stopped

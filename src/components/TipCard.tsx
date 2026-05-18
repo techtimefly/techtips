@@ -51,6 +51,14 @@ export function TipCard({ tip, index, onOpen }: Props) {
           <span className="absolute right-4 top-4 rounded-full bg-bg/75 px-2.5 py-1 text-xs text-ink-muted backdrop-blur">
             {tip.effort}
           </span>
+          {tip.draft && (
+            <span
+              className="absolute bottom-4 left-4 rounded-full px-2.5 py-1 text-xs font-semibold"
+              style={{ backgroundColor: '#fbbf24', color: '#0b0d17' }}
+            >
+              Draft
+            </span>
+          )}
         </div>
 
         {/* Body */}

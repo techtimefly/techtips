@@ -1,0 +1,12 @@
+node_modules
+dist
+.git
+.gitignore
+.playwright-mcp
+.obsidian
+*.local
+npm-debug.log*
+.DS_Store
+Dockerfile
+docker-compose.yml
+.dockerignore

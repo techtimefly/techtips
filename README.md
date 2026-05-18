@@ -31,6 +31,24 @@ npm run build    # typecheck, build, and pre-render every route → dist/
 npm run preview  # serve the built (pre-rendered) site
 ```
 
+## Docker
+
+The site can also run as a container — handy for keeping it always-on. The
+container runs the dev server with `content/` bind-mounted, so editing tips,
+categories or articles in Obsidian (over the host's Samba share) still
+hot-reloads inside the container.
+
+```bash
+docker compose up -d --build   # build + start → http://localhost:5173
+docker compose logs -f         # watch logs
+docker compose down            # stop
+```
+
+Samba stays on the **host**, not in the container — the container simply
+bind-mounts the same `content/` folder Samba shares, so the
+Obsidian → Samba → `content/` editing loop is unchanged. Rebuild the image
+(`--build`) after code changes; content edits need no rebuild.
+
 ## Structure
 
 ```

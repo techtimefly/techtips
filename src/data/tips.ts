@@ -34,6 +34,8 @@ export interface Tip {
   effort: string;
   /** Optional image; when set, overrides the category art on the card + modal */
   image: string | null;
+  /** Draft tips appear only on the dev server, never in the production build */
+  draft: boolean;
   /** Full step-by-step detail shown in the modal */
   steps: string[];
 }
@@ -83,5 +85,10 @@ export const tips: Tip[] = Object.values(tipModules)
     summary: raw.summary,
     effort: raw.effort,
     image: raw.image,
+    draft: raw.draft,
     steps: raw.steps,
-  }));
+  }))
+  // Drafts are visible while developing (npm run dev) but excluded from the
+  // production build — so a draft tip is never published until its `draft`
+  // flag is removed.
+  .filter((tip) => import.meta.env.DEV || !tip.draft);

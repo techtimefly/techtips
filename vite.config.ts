@@ -136,6 +136,8 @@ function contentMarkdown(): Plugin {
         effort: String(data.effort),
         // Optional — overrides the category art on this tip's card + modal.
         image: data.image ? String(data.image) : null,
+        // Draft tips show only on the dev server, never in the production build.
+        draft: data.draft === true,
         order: typeof data.order === 'number' ? data.order : 999,
         steps,
       };
@@ -148,7 +150,13 @@ export default defineConfig({
   plugins: [contentMarkdown(), react(), tailwindcss()],
   // host: true binds to 0.0.0.0 so the site is reachable from other
   // devices on the LAN, not just localhost.
-  server: { host: true, port: 5173 },
+  server: {
+    host: true,
+    port: 5173,
+    // In Docker, file changes on the bind-mounted content/ folder are
+    // detected most reliably with polling (set via DOCKER=true in compose).
+    watch: process.env.DOCKER ? { usePolling: true } : undefined,
+  },
   preview: { host: true, port: 4173 },
   build: {
     // three.js is intentionally code-split into the lazy HeroScene chunk,
