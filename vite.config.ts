@@ -153,6 +153,7 @@ export default defineConfig({
   server: {
     host: true,
     port: 5173,
+    allowedHosts: ['techtips.lan'],
     // In Docker, file changes on the bind-mounted content/ folder are
     // detected most reliably with polling (set via DOCKER=true in compose).
     watch: process.env.DOCKER ? { usePolling: true } : undefined,

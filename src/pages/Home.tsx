@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Head } from 'vite-react-ssg';
 import { Hero } from '../components/Hero';
 import { CategoryCards } from '../components/CategoryCards';
@@ -10,8 +11,28 @@ import { tips } from '../data/tips';
 import type { Tip } from '../data/tips';
 
 export function Home() {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [filter, setFilter] = useState<Filter>('all');
   const [selected, setSelected] = useState<Tip | null>(null);
+
+  // Open tip or apply category filter from URL params (set by SearchModal navigation).
+  useEffect(() => {
+    const tipId = searchParams.get('tip');
+    const catId = searchParams.get('cat');
+    if (tipId) {
+      const tip = tips.find((t) => t.id === tipId);
+      if (tip) setSelected(tip);
+    } else if (catId) {
+      setFilter(catId as Filter);
+    }
+  }, [searchParams]);
+
+  function handleClose() {
+    setSelected(null);
+    // Strip the ?tip param from the URL without pushing a new history entry.
+    if (searchParams.has('tip')) navigate('/', { replace: true });
+  }
 
   const visible = useMemo(
     () => (filter === 'all' ? tips : tips.filter((t) => t.category === filter)),
@@ -66,7 +87,7 @@ export function Home() {
         <TipGrid tips={visible} onOpen={setSelected} />
       </section>
 
-      <TipModal tip={selected} onClose={() => setSelected(null)} />
+      <TipModal tip={selected} onClose={handleClose} />
     </>
   );
 }
